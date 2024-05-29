@@ -1,0 +1,61 @@
+version: "3.9"
+
+services:
+  load_balancer_nginx:
+    image: nginx:latest
+    build: ./nginx
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - server1
+      - server2
+      - server3
+      - server4
+      - server5
+
+  server1:
+    container_name: server1
+    build: ./Server
+    image: dockerhub-flask_live_app:1.0.0
+    environment:
+      - SERVER_ID=1
+    ports:
+      - "5001:5000"
+
+  server2:
+    container_name: server2
+    build: ./Server
+    image: dockerhub-flask_live_app:1.0.0
+    environment:
+      - SERVER_ID=2
+    ports:
+      - "5002:5000"
+
+  server3:
+    container_name: server3
+    build: ./Server
+    image: dockerhub-flask_live_app:1.0.0
+    environment:
+      - SERVER_ID=3
+    ports:
+      - "5003:5000"
+
+  server4:
+    container_name: server4
+    build: ./Server
+    image: dockerhub-flask_live_app:1.0.0
+    environment:
+      - SERVER_ID=4
+    ports:
+      - "5004:5000"
+
+  server5:
+    container_name: server5
+    build: ./Server
+    image: dockerhub-flask_live_app:1.0.0
+    environment:
+      - SERVER_ID=5
+    ports:
+      - "5005:5000"
