@@ -1,2 +1,5 @@
 flask
-prometheus-flask-exporter
+psycopg2-binary
+Flask-SQLAlchemy
+pymysql
+prometheus-client

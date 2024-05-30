@@ -3,7 +3,6 @@ version: "3.9"
 services:
   load_balancer_nginx:
     image: nginx:latest
-    build: ./nginx
     ports:
       - "8080:80"
     volumes:
@@ -20,42 +19,106 @@ services:
     build: ./Server
     image: dockerhub-flask_live_app:1.0.0
     environment:
-      - SERVER_ID=1
+      SERVER_ID: "1"
+      DATABASE_URL: "mysql+pymysql://admin:2828@admin_db:3306/db"
     ports:
       - "5001:5000"
+    depends_on:
+      - mysql
 
   server2:
     container_name: server2
     build: ./Server
     image: dockerhub-flask_live_app:1.0.0
     environment:
-      - SERVER_ID=2
+      SERVER_ID: "2"
+      DATABASE_URL: "mysql+pymysql://admin:2828@admin_db:3306/db"
     ports:
       - "5002:5000"
+    depends_on:
+      - mysql
 
   server3:
     container_name: server3
     build: ./Server
     image: dockerhub-flask_live_app:1.0.0
     environment:
-      - SERVER_ID=3
+      SERVER_ID: "3"
+      DATABASE_URL: "mysql+pymysql://admin:2828@admin_db:3306/db"
     ports:
       - "5003:5000"
+    depends_on:
+      - mysql
 
   server4:
     container_name: server4
     build: ./Server
     image: dockerhub-flask_live_app:1.0.0
     environment:
-      - SERVER_ID=4
+      SERVER_ID: "4"
+      DATABASE_URL: "mysql+pymysql://admin:2828@admin_db:3306/db"
     ports:
       - "5004:5000"
+    depends_on:
+      - mysql
 
   server5:
     container_name: server5
     build: ./Server
     image: dockerhub-flask_live_app:1.0.0
     environment:
-      - SERVER_ID=5
+      SERVER_ID: "5"
+      DATABASE_URL: "mysql+pymysql://admin:2828@admin_db:3306/db"
     ports:
       - "5005:5000"
+    depends_on:
+      - mysql
+
+  mysql:
+    container_name: admin_db
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: 2828
+      MYSQL_DATABASE: db
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: 2828
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  prometheus:
+    container_name: prometheus
+    image: prom/prometheus:latest
+    ports: 
+      - "9090:9090"
+    command: --config.file=/etc/prometheus/prometheus.yaml
+    volumes:
+      - ./prometheus.yaml:/etc/prometheus/prometheus.yaml
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_AUTH_BASIC_ENABLED=false
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      
+  grafana-dashboards:
+    image: alpine:3.10
+    depends_on:
+      - grafana
+    volumes:
+      - ./grafana-data:/grafana
+    command: >
+      /bin/sh -c "
+        apk add --no-cache curl
+        echo 'waiting for grafana'
+        sleep 5s
+        cd /grafana
+        curl --request POST http://grafana:3000/api/datasources --header 'Content-Type: application/json' -d @datasources.json
+        curl --request POST http://grafana:3000/api/dashboards/db --header 'Content-Type: application/json' -d @dashboard.json"
+
+volumes:
+  mysql_data:

@@ -1,0 +1,8 @@
+global:
+  scrape_interval:     5s
+  evaluation_interval: 30s
+scrape_configs:
+- job_name: flask-server
+  honor_labels: true
+  static_configs:
+  - targets: ['server1:5000','server2:5000','server3:5000','server4:5000','server5:5000']
