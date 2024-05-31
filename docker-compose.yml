@@ -25,6 +25,11 @@ services:
       - "5001:5000"
     depends_on:
       - mysql
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5001/"] 
+      interval: 10s  
+      timeout: 5s   
+      retries: 5 
 
   server2:
     container_name: server2
@@ -37,6 +42,11 @@ services:
       - "5002:5000"
     depends_on:
       - mysql
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5002/"] 
+      interval: 10s  
+      timeout: 5s   
+      retries: 5 
 
   server3:
     container_name: server3
@@ -49,6 +59,11 @@ services:
       - "5003:5000"
     depends_on:
       - mysql
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5003/"] 
+      interval: 10s  
+      timeout: 5s   
+      retries: 5 
 
   server4:
     container_name: server4
@@ -61,6 +76,11 @@ services:
       - "5004:5000"
     depends_on:
       - mysql
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5004/"] 
+      interval: 10s  
+      timeout: 5s   
+      retries: 5 
 
   server5:
     container_name: server5
@@ -73,6 +93,11 @@ services:
       - "5005:5000"
     depends_on:
       - mysql
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5005/"] 
+      interval: 10s  
+      timeout: 5s   
+      retries: 5 
 
   mysql:
     container_name: admin_db
@@ -86,6 +111,11 @@ services:
       - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
 
   prometheus:
     container_name: prometheus
